@@ -168,7 +168,7 @@ public class CropImageActivity extends MonitoredActivity {
                         callback.onSetupFinished();
                     }
                 });
-                bgThread.quitSafely();
+                bgThread.quit();
             }
         });
     }
