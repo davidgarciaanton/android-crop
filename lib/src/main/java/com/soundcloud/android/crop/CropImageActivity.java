@@ -148,29 +148,22 @@ public class CropImageActivity extends MonitoredActivity {
 
     private void backgroundSetupFromIntent(final SetupFromIntentCallback callback) {
 
-        final HandlerThread bgThread = new HandlerThread("setup_background");
-        bgThread.start();
-        Handler bgHandler = new Handler(bgThread.getLooper());
-
-        final ProgressDialog progressDialog = ProgressDialog.show(this, null,
-                getString(R.string.crop__wait), false);
-
-        progressDialog.show();
-        bgHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                setupFromIntent();
-
-                runOnUiThread(new Runnable() {
+        CropUtil.startBackgroundJob(
+                this, null, getString(R.string.crop__wait), new Runnable() {
                     @Override
                     public void run() {
-                        progressDialog.dismiss();
-                        callback.onSetupFinished();
+                        setupFromIntent();
+
+                        handler.post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.onSetupFinished();
+                                    }
+                                }
+                        );
                     }
-                });
-                bgThread.quit();
-            }
-        });
+                }, handler);
     }
 
     private int calculateBitmapSampleSize(Uri bitmapUri) throws IOException {
