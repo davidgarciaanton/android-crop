@@ -1,7 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
-//apply from: '../.publishing/sonatype.gradle'
 
 archivesBaseName = 'android-crop'
 
@@ -20,7 +17,7 @@ android {
 
 dependencies {
     compile 'com.android.support:support-annotations:21.0.0'
-    provided 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:support-v4:21.0.3'
     androidTestCompile 'com.squareup:fest-android:1.0.7'
     androidTestCompile 'com.android.support:support-v4:21.0.3'
     androidTestCompile 'org.mockito:mockito-core:1.9.5'
