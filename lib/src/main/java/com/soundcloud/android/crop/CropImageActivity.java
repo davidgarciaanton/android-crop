@@ -16,7 +16,6 @@
 
 package com.soundcloud.android.crop;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,7 +27,6 @@ import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
@@ -55,6 +53,9 @@ public class CropImageActivity extends MonitoredActivity {
     private int maxX;
     private int maxY;
     private int exifRotation;
+    private int fixedX;
+    private int fixedY;
+
 
     private Uri sourceUri;
     private Uri saveUri;
@@ -120,6 +121,8 @@ public class CropImageActivity extends MonitoredActivity {
             aspectY = extras.getInt(Crop.Extra.ASPECT_Y);
             maxX = extras.getInt(Crop.Extra.MAX_X);
             maxY = extras.getInt(Crop.Extra.MAX_Y);
+            fixedX = extras.getInt(Crop.Extra.FIX_X);
+            fixedY = extras.getInt(Crop.Extra.FIX_Y);
             saveUri = extras.getParcelable(MediaStore.EXTRA_OUTPUT);
         }
 
@@ -242,10 +245,18 @@ public class CropImageActivity extends MonitoredActivity {
 
             Rect imageRect = new Rect(0, 0, width, height);
 
-            // Make the default size about 4/5 of the width or height
-            int cropWidth = Math.min(width, height) * 4 / 5;
-            @SuppressWarnings("SuspiciousNameCombination")
-            int cropHeight = cropWidth;
+            int cropWidth;
+            int cropHeight;
+            if (fixedY != 0 && fixedX != 0) {
+                cropWidth = Math.min(width, fixedX);
+                cropHeight = Math.min(height, fixedY);
+            } else {
+
+                // Make the default size about 4/5 of the width or height
+                cropWidth = Math.min(width, height) * 4 / 5;
+
+                cropHeight = cropWidth;
+            }
 
             if (aspectX != 0 && aspectY != 0) {
                 if (aspectX > aspectY) {
@@ -259,7 +270,7 @@ public class CropImageActivity extends MonitoredActivity {
             int y = (height - cropHeight) / 2;
 
             RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
-            hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
+            hv.setup(imageView.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0, fixedX == 0 && fixedY == 0);
             imageView.add(hv);
         }
 
