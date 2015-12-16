@@ -378,7 +378,9 @@ public class CropImageActivity extends MonitoredActivity {
             }
 
             try {
-                croppedImage = decoder.decodeRegion(rect, new BitmapFactory.Options());
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = sampleSize;
+                croppedImage = decoder.decodeRegion(rect, options); // use same sample size than display, so we minimize out of memory
                 if (rect.width() > outWidth || rect.height() > outHeight) {
                     Matrix matrix = new Matrix();
                     matrix.postScale((float) outWidth / rect.width(), (float) outHeight / rect.height());
